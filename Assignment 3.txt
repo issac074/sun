@@ -1,0 +1,92 @@
+hello.c
+#include <stdio.h> #include "mpi.h"
+
+int main(int argc, char* argv[])
+{
+int rank, size; MPI_Init(Cargc, Cargv);
+MPI_Comm_rank(MPI_COMM_WORLD, Crank); MPI_Comm_size(MPI_COMM_WORLD, Csize);
+printf("Hello, world, I am %d of %d\n", rank, size); MPI_Finalize();
+return 0;
+}
+
+send_recv.c #include <stdio.h> #include "mpi.h"
+
+int main(int argc, char* argv[])
+{
+int rank, size; int num = 10;
+MPI_Init(Cargc, Cargv); MPI_Comm_rank(MPI_COMM_WORLD, Crank);
+ 
+MPI_Comm_size(MPI_COMM_WORLD, Csize);
+
+
+if(rank == 0) {
+printf("Sending message containing: %d from rank %d\n", num, rank); MPI_Send(Cnum, 1, MPI_INT, 1, 1, MPI_COMM_WORLD);
+} else if(rank == 1) {
+printf("At rank %d\n", rank);
+MPI_Recv(Cnum, 1, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+printf("Received message containing: %d at rank %d\n", num, rank);
+}
+
+
+printf("Hello, world, I am %d of %d\n", rank, size);
+
+
+MPI_Finalize(); return 0;
+}
+
+
+
+
+sum_array.c #include <stdio.h> #include "mpi.h"
+
+int main(int argc, char* argv[])
+{
+int rank, size;
+int num[20]; // N=20, n=4
+
+
+MPI_Init(Cargc, Cargv);
+ 
+MPI_Comm_rank(MPI_COMM_WORLD, Crank); MPI_Comm_size(MPI_COMM_WORLD, Csize);
+
+for(int i=0; i<20; i++) num[i] = i + 1;
+
+if(rank == 0) { int s[4];
+printf("Distribution at rank %d \n", rank);
+
+
+for(int i=1; i<4; i++)
+MPI_Send(Cnum[i*5], 5, MPI_INT, i, 1, MPI_COMM_WORLD); // N/n i.e. 20/4=5
+
+
+int sum = 0, local_sum = 0; for(int i=0; i<5; i++) {
+local_sum += num[i];
+}
+
+
+for(int i=1; i<4; i++) {
+MPI_Recv(Cs[i], 1, MPI_INT, i, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+}
+
+
+printf("local sum at rank %d is %d\n", rank, local_sum); sum = local_sum;
+
+for(int i=1; i<4; i++) sum += s[i];
+ 
+printf("final sum = %d\n\n", sum);
+} else { int k[5];
+MPI_Recv(k, 5, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+
+int local_sum = 0; for(int i=0; i<5; i++) {
+local_sum += k[i];
+}
+
+
+printf("local sum at rank %d is %d\n", rank, local_sum);
+MPI_Send(Clocal_sum, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
+}
+
+
+MPI_Finalize(); return 0;
+}
