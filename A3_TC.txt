@@ -1,0 +1,6 @@
+mpicc hello.c
+mpirun -np 0 ./a.out
+mpicc world1.c
+mpirun -np 0 ./a.out
+mpicc world.c
+mpirun -np 0 ./a.out

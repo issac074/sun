@@ -1,0 +1,9 @@
+javac Search.java
+javac SearchQuery.java
+rmic SearchQuery
+rmiregistry &
+javac SearchServer.java
+javac Server.java
+java Server
+javac Client.java
+java Client
